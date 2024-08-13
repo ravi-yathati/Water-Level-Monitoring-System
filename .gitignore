@@ -1,52 +1,46 @@
-# Prerequisites
-*.d
+#define BLYNK_TEMPLATE_ID "TMPL3iosu21SO"
+#define BLYNK_TEMPLATE_NAME "water level monitor"
+#define BLYNK_AUTH_TOKEN "oeL3Ym6AC3RFbpw4KYNBNxCnU3lTJw_1"
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+// Comment this out to disable prints and save space
+#define BLYNK_PRINT Serial
 
-# Linker output
-*.ilk
-*.map
-*.exp
 
-# Precompiled Headers
-*.gch
-*.pch
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#define trig D5   // Trig pin
+#define echo D6 
+char auth[] = BLYNK_AUTH_TOKEN;
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "Naruto uzumaki";
+char pass[] = "999999999";
+int depth =20;
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+BlynkTimer timer;
+ 
+void waterlevel()
+{
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  long t = pulseIn(echo, HIGH);
+  long cm = t / 29 / 2;
+  Serial.println(cm);
+  long level= depth-cm;
+  if (level<0)
+  level=0;
+  level = map(level,0,depth-3,0,100);
+  Blynk.virtualWrite(V0, level);
+}
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+ 
+void setup()
+{
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
+  Serial.begin(115200);
+  Blynk.begin(auth, ssi
